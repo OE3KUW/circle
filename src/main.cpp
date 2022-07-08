@@ -1,5 +1,5 @@
 //*****************************************************************************
-//
+//7.7.2022
 //                               c i r c e l
 //
 //                                                              қuran july 2022
@@ -102,7 +102,7 @@ void IRAM_ATTR onTimer(void)
         tenMsec++;
     }
 
-    if (tenMsec == 100)
+    if (tenMsec == 10)  // 100
     {
         // one Second :  
         
