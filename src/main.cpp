@@ -5,9 +5,17 @@
 //                                                              қuran july 2022
 //*****************************************************************************
 #include <Arduino.h>
+#include "BluetoothSerial.h"
 
 int led = 5;
 int onOff;
+
+// Blue Tooth:
+#define LEN 20
+#define CR  13
+#define LF  10
+BluetoothSerial SerialBT;
+char text[LEN];
 
 //  TIMER INTERRUPT:
 hw_timer_t * timer = NULL;
@@ -25,7 +33,8 @@ struct message
 };
 static MESSAGE m, n;
 
-
+// RTOS not used in this version:
+/*
 // TaskFunctions:
 static void taskFuncA(void * arg)
 {
@@ -45,30 +54,36 @@ static void taskFuncB(void * arg)
   for(;;)
   {
     printf("b");
-    delay(100);
+    delay(1000);
   }
 }
+*/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void setup() 
 {
-  int app_cpu = 0;
-
+//  int app_cpu = 0;  for RTOS
   m.x = 7;
   n.x = 100;
 
   delay(500); // pause für serial setup...
   printf("start!\n- - - - - - - - - - - - - - - - - - - - - - - - - - -  -\n");
-  app_cpu = xPortGetCoreID();
-  printf("app_cpu is %d\n", app_cpu);
+  
 
   pinMode(led, OUTPUT);
   digitalWrite(led, HIGH); // invers!  LOW = Led on!
 
-  xTaskCreatePinnedToCore (taskFuncA, "task Function A", 2048, &m, 1, NULL, app_cpu );
-  xTaskCreatePinnedToCore (taskFuncB, "task Function B", 2048, &n, 1, NULL, app_cpu );
+  // RTOS:
+  // app_cpu = xPortGetCoreID();
+  // printf("app_cpu is %d\n", app_cpu);
+  // xTaskCreatePinnedToCore (taskFuncA, "task Function A", 2048, &m, 1, NULL, app_cpu );  for RTOS .. ö 
+  // xTaskCreatePinnedToCore (taskFuncB, "task Function B", 2048, &n, 1, NULL, app_cpu );
 
+  // BlueTooth:
 
+  SerialBT.begin("LoLin32July22");
+  printf("bluetooth startet\n");
+  
   // TIMER INTERRUPT:
 
   timer = timerBegin(0, 80, true);
@@ -79,7 +94,39 @@ void setup()
 
 void loop() 
 {
+    char c;
+    static int i = 0;
+    // BlueTooth:
 
+    if (SerialBT.available())
+    {
+       text[i%LEN] = c = SerialBT.read();
+       i++;
+
+       printf("i = %d c = %c %d \n", i, c, (int) c); // for tests only
+       
+       if (c == LF)
+       {
+        text[i%LEN] = '\0';
+        printf("%s", text);
+        i = 0;
+       }
+
+       if (0 == strncmp("ok", text, 2))
+       {
+           printf("\nok received\n");
+           SerialBT.write('y');
+           SerialBT.write('e');
+           SerialBT.write('s');
+           SerialBT.write('!');
+           SerialBT.write('\n');
+           text[0] = ' ';  // ansonsten wird yes! mehrmals geschickt! 
+       }
+
+
+    }   
+
+   // Timer
    if (flag == 1)
    {
         onOff = (onOff == 0) ? 1 : 0;
@@ -102,7 +149,7 @@ void IRAM_ATTR onTimer(void)
         tenMsec++;
     }
 
-    if (tenMsec == 10)  // 100
+    if (tenMsec == 100)  // 100 entspricht 1 sec
     {
         // one Second :  
         
