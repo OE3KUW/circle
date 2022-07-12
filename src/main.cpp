@@ -95,36 +95,22 @@ void setup()
 void loop() 
 {
     char c;
-    static int i = 0;
+    String text = "";   // mit jedem Loop Durchlauf wird der text hier zurückgesetzt.
+
     // BlueTooth:
 
-    if (SerialBT.available())
+    while (SerialBT.available())
     {
-       text[i%LEN] = c = SerialBT.read();
-       i++;
+       c = SerialBT.read();
+       text += c;
+    }
+    printf("%s",text.c_str());
 
-       printf("i = %d c = %c %d \n", i, c, (int) c); // for tests only
-       
-       if (c == LF)
-       {
-        text[i%LEN] = '\0';
-        printf("%s", text);
-        i = 0;
-       }
+    if (text.startsWith("ok"))
+    {
+      SerialBT.println("yes!");
+    }
 
-       if (0 == strncmp("ok", text, 2))
-       {
-           printf("\nok received\n");
-           SerialBT.write('y');
-           SerialBT.write('e');
-           SerialBT.write('s');
-           SerialBT.write('!');
-           SerialBT.write('\n');
-           text[0] = ' ';  // ansonsten wird yes! mehrmals geschickt! 
-       }
-
-
-    }   
 
    // Timer
    if (flag == 1)
