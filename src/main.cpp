@@ -135,6 +135,12 @@ void setup()
 
     impulsLcount = impulsRcount = 0;  // can später entfernt werden
 
+    pinMode(impulsL, INPUT_PULLUP);
+    pinMode(impulsR, INPUT_PULLUP);
+    digitalWrite(impulsL, HIGH);
+    digitalWrite(impulsR, HIGH);
+
+
     attachInterrupt(digitalPinToInterrupt(impulsR), impuls_R_isr, FALLING);
     attachInterrupt(digitalPinToInterrupt(impulsL), impuls_L_isr, FALLING);
   
@@ -236,7 +242,7 @@ void loop()
 
         printf("%s\n", report);
 
-        sprintf(respond, "vL %03d vR %03d mL %d aL %d c %d", vL, vR, meterL, actualR, count);
+        sprintf(respond, "vL %03d vR %03d mR %d aR %d c %d", vL, vR, meterR, actualR, count);
         count = 0;
         SerialBT.println(respond);
 
@@ -252,7 +258,7 @@ void impuls_L_isr(void)
 {
   impulsLcount += directionL;
   actualL += directionL;
-  count++;
+ 
 
   //vL = meterL - actualL;
   //if (vL > 255) vL = 255;
@@ -263,6 +269,7 @@ void impuls_R_isr(void)
 {
   impulsRcount += directionR;
   actualR += directionR;
+  count++;
 
   //vR = meterR - actualR;
   //if (vR > 255) vR = 255;
