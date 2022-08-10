@@ -1,16 +1,23 @@
 //*****************************************************************************
-// 8. Aug. 2022
+// x. Aug. 2022
 //                               c i r c l e 
 //
 //                                                               қuran wolfgang
 //*****************************************************************************
+// add Libraries NeoPixelBus Version 2.7
 #include <Arduino.h>
 #include "BluetoothSerial.h"
+#include <Wire.h>
+#include <SPI.h>
 #include "FastLED.h"
 
 // defines:
 #define H               HIGH
 #define L                LOW
+#define NUM_LEDS           4
+#define DATA_PIN          23
+#define CLOCK_PIN         18
+
 #define NUM_LEDS           4
 #define DATA_PIN          23
 #define CLOCK_PIN         18
@@ -83,7 +90,7 @@ static MESSAGE m, n;
 static void taskFuncA(void * arg)
 {
   MESSAGE * myMesPointer = (MESSAGE*) arg;
-  printf("\ntask function A! message: %d\n", myMesPointer->x);
+  printf("\ntask function A!!! message: %d\n", myMesPointer->x);
   for(;;)
   {
     printf("a");
@@ -116,21 +123,20 @@ void setup()
     pinMode(led, OUTPUT);
     digitalWrite(led, HIGH); // invers!  LOW = Led on!
 
+    FastLED.addLeds<SK9822, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
+
+    leds[0] = CRGB{255, 0, 0};
+    leds[1] = CRGB{255, 255, 0};
+    leds[2] = CRGB{0, 255, 255};
+    leds[3] = CRGB{0, 0, 255};
+
+    FastLED.show();
+
   // RTOS:
   // app_cpu = xPortGetCoreID();
   // printf("app_cpu is %d\n", app_cpu);
   // xTaskCreatePinnedToCore (taskFuncA, "task Function A", 2048, &m, 1, NULL, app_cpu );  for RTOS .. ö 
   // xTaskCreatePinnedToCore (taskFuncB, "task Function B", 2048, &n, 1, NULL, app_cpu );
-
-    FastLED.addLeds<SK9822, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
-
-    leds[0] = CRGB{0, 0, 255}; // r, b, g
-    leds[1] = CRGB{0, 0, 255};
-    leds[2] = CRGB{0, 0, 255};
-    leds[3] = CRGB{0, 0, 255};
-
-    FastLED.show();
-
 
 
   // BlueTooth:
