@@ -6,10 +6,14 @@
 //*****************************************************************************
 #include <Arduino.h>
 #include "BluetoothSerial.h"
+#include "FastLED.h"
 
 // defines:
 #define H               HIGH
 #define L                LOW
+#define NUM_LEDS           4
+#define DATA_PIN          23
+#define CLOCK_PIN         18
 
 #define WHEEL_L            2 
 #define WHEEL_R           A4
@@ -39,6 +43,8 @@ volatile int diffL, diffR;
 volatile int vL, vR;            // Vergleichswert für die pwm Motorsteuerung
 
 volatile int count;
+
+CRGB leds[NUM_LEDS];
 
 BluetoothSerial SerialBT;
 char text[LEN];
@@ -115,6 +121,17 @@ void setup()
   // printf("app_cpu is %d\n", app_cpu);
   // xTaskCreatePinnedToCore (taskFuncA, "task Function A", 2048, &m, 1, NULL, app_cpu );  for RTOS .. ö 
   // xTaskCreatePinnedToCore (taskFuncB, "task Function B", 2048, &n, 1, NULL, app_cpu );
+
+    FastLED.addLeds<SK9822, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
+
+    leds[0] = CRGB{0, 0, 255}; // r, b, g
+    leds[1] = CRGB{0, 0, 255};
+    leds[2] = CRGB{0, 0, 255};
+    leds[3] = CRGB{0, 0, 255};
+
+    FastLED.show();
+
+
 
   // BlueTooth:
 
