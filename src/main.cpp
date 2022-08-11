@@ -30,6 +30,11 @@
 #define WHEEL_L_DIRECTION A5 
 #define WHEEL_R_DIRECTION 15 
 
+#define OLED_RESET -1
+#define SCREEN_WIDTH 128 
+#define SCREEN_HEIGHT 64 
+
+
 // Blue Tooth:
 #define LEN 100
 #define CR  13
@@ -55,6 +60,8 @@ volatile int vL, vR;            // Vergleichswert für die pwm Motorsteuerung
 volatile int count;
 
 CRGB leds[NUM_LEDS];
+
+Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
 BluetoothSerial SerialBT;
 char text[LEN];
@@ -134,6 +141,16 @@ void setup()
     leds[3] = CRGB{0, 0, 255};
 
     FastLED.show();
+
+    oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    //oled.display();
+    oled.clearDisplay();
+    oled.setTextSize(2);
+    oled.setTextColor(WHITE);
+    oled.setCursor(0, 0);
+    oled.print("hi Marc!");
+    oled.display();
+
 
   // RTOS:
   // app_cpu = xPortGetCoreID();
