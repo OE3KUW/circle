@@ -6,10 +6,13 @@
 //*****************************************************************************
 // add Libraries NeoPixelBus Version 2.7
 #include <Arduino.h>
-#include "BluetoothSerial.h"
 #include <Wire.h>
-#include <SPI.h>
-#include "FastLED.h"
+#include <Adafruit_I2CDevice.h>
+#include <Adafruit_GFX.h> 
+#include <Adafruit_SSD1306.h>
+#include <FastLED.h>
+#include <BluetoothSerial.h>
+
 
 // defines:
 #define H               HIGH
