@@ -1,5 +1,5 @@
 //*****************************************************************************
-// 10. Aug. 2022
+// 11. Aug. 2022
 //                               c i r c l e 
 //
 //                                                               қuran wolfgang
@@ -128,9 +128,9 @@ void setup()
 
     FastLED.addLeds<SK9822, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
 
-    leds[0] = CRGB{255, 0, 0};
+    leds[0] = CRGB{255, 255, 0};
     leds[1] = CRGB{255, 255, 0};
-    leds[2] = CRGB{0, 255, 255};
+    leds[2] = CRGB{0, 0, 255};
     leds[3] = CRGB{0, 0, 255};
 
     FastLED.show();
