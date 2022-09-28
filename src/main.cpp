@@ -12,6 +12,7 @@
 #include <Adafruit_SSD1306.h>
 #include <FastLED.h>
 #include <BluetoothSerial.h>
+#include <AppAdapter.hpp>
 
 // defines:
 #define H HIGH
@@ -60,7 +61,7 @@ CRGB leds[NUM_LEDS];
 
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
-BluetoothSerial SerialBT;
+AppAdapter appAdapter;
 char text[LEN];
 
 // SPEEDOMETER:
@@ -122,7 +123,6 @@ void setup()
   //    m.x = 7;     // for RTOS
   //    n.x = 100;   // for RTOS
 
-  delay(500); // pause für serial setup...
   printf("start!\n- - - - - - - - - - - - - - - - - - - - - - - - - - -  -\n");
 
   pinMode(led, OUTPUT);
@@ -154,8 +154,7 @@ void setup()
 
   // BlueTooth:
 
-  SerialBT.begin("LoLin32_220808");
-  printf("bluetooth startet\n");
+  appAdapter.connect();
 
   // motor:
   speed = diff = 0;
@@ -203,73 +202,8 @@ void loop()
   String text = ""; // mit jedem Loop Durchlauf wird der text hier zurückgesetzt.
   char respond[LEN];
   char report[LEN];
-
-  // BlueTooth:
-
-  while (SerialBT.available())
-  {
-    c = SerialBT.read();
-    text += c;
-
-    switch (c)
-    {
-    case 'a': // LEDS on
-      break;
-    case 'b': // LEDS off
-      break;
-    case 'c': // STOP
-      speed = 0;
-      diff = 0;
-      break;
-    case 'd': // UP
-      speed = 60;
-      diff = 0;
-      break;
-    case 'e': // DOWN
-      speed = -60;
-      diff = 0;
-      break;
-    case 'f': // LEFT UP
-      speed = 60;
-      diff = -60;
-      break;
-    case 'g': // RIGHT UP
-      speed = 60;
-      diff = 60;
-      break;
-    case 'h': // ROTATE LEFT
-      speed = 0;
-      diff = -60;
-      break;
-    case 'i': // ROTATE RIGHT
-      speed = 0;
-      diff = 60;
-      break;
-    }
-
-    driveControl();
-
-    sprintf(report, "get: %c\n", c);
-    printf(report);
-  }
-
- 
-
   
-
-  if (text.startsWith("ok"))
-  {
-    SerialBT.println("yes!");
-  }
-
-  if (text.startsWith("start"))
-  {
-    SerialBT.println("we start now!");
-    speed = 60;
-    diff = 0;
-    setL = setR = 40;
-    // Richtung bleibt derzeit noch weg....
-  }
+    driveControl();
 
   /*    if (text.startsWith("+")) */
 
