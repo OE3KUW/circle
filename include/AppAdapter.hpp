@@ -17,7 +17,7 @@ public:
     char connect();
     int getLeft();
     int getRight();
-    void getData();
+    void addEventHandler();
     friend void onEvent(esp_spp_cb_event_t, esp_spp_cb_param_t *);
 };
 

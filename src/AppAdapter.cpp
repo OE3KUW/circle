@@ -1,5 +1,6 @@
 #include <AppAdapter.hpp>
 
+
 AppAdapter::AppAdapter(const String n)
 {
     apname = n;
@@ -31,4 +32,5 @@ char AppAdapter::connect()
     Serial.println("[INFO] Connection started");
     return 0;
 }
+
 
