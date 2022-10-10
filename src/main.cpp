@@ -12,6 +12,8 @@
 #include <Adafruit_SSD1306.h>
 #include <FastLED.h>
 #include <BluetoothSerial.h>
+#include <DriveAdapter.hpp>
+#include <AppAdapter.hpp>
 
 // defines:
 #define H HIGH
@@ -59,6 +61,8 @@ volatile int count;
 CRGB leds[NUM_LEDS];
 
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
+
+BluetoothSerial SerialBT;
 
 AppAdapter appAdapter;
 
@@ -255,10 +259,6 @@ void loop()
     sprintf(report, "get: %c\n", c);
     printf(report);
   }
-
- 
-
-  
 
   if (text.startsWith("ok"))
   {
