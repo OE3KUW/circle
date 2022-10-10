@@ -60,7 +60,10 @@ CRGB leds[NUM_LEDS];
 
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
-BluetoothSerial SerialBT;
+AppAdapter appAdapter;
+
+DriveAdapter driveAdapter;
+
 char text[LEN];
 
 // SPEEDOMETER:
@@ -253,7 +256,7 @@ void loop()
     printf(report);
   }
 
-
+ 
 
   
 
