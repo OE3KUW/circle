@@ -4,7 +4,7 @@
 //
 //                                                               қuran wolfgang
 //*****************************************************************************
-// add Libraries NeoPixelBus Version 2.7
+// add Libraries NeoPixelBus Version 2.7 <-- Todo oder woffuer?
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_I2CDevice.h>
@@ -15,7 +15,6 @@
 #include <DriveAdapter.hpp>
 #include <AppAdapter.hpp>
 
-// defines:
 #define H HIGH
 #define L LOW
 #define NUM_LEDS 4
@@ -41,7 +40,6 @@
 #define LF 10
 
 // global variables:
-
 int led = 5; // on board led
 int onOff;   // on board led on / off
 
@@ -86,50 +84,8 @@ void IRAM_ATTR onTimer(void);
 void impuls_R_isr(void);
 void impuls_L_isr(void);
 
-// RTOS not used in this version:
-
-/*
-// structs and types
-typedef struct message MESSAGE;
-struct message
-{
-  int x;
-};
-static MESSAGE m, n;
-
-
-// TaskFunctions:
-static void taskFuncA(void * arg)
-{
-  MESSAGE * myMesPointer = (MESSAGE*) arg;
-  printf("\ntask function A!!! message: %d\n", myMesPointer->x);
-  for(;;)
-  {
-    printf("a");
-    delay(500);
-  }
-}
-
-static void taskFuncB(void * arg)
-{
-  MESSAGE * myMesPointer = (MESSAGE*) arg;
-  printf("\ntask function B! message: %d\n", myMesPointer->x);
-  for(;;)
-  {
-    printf("b");
-    delay(1000);
-  }
-}
-*/
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void setup()
 {
-  //  int app_cpu = 0;  for RTOS
-  //    m.x = 7;     // for RTOS
-  //    n.x = 100;   // for RTOS
-
-  delay(500); // pause für serial setup...
   printf("start!\n- - - - - - - - - - - - - - - - - - - - - - - - - - -  -\n");
 
   pinMode(led, OUTPUT);
@@ -174,20 +130,9 @@ void setup()
   diffL = diffR = 0;
   vL = vR = 0;
 
-  pinMode(WHEEL_L, OUTPUT);
-  pinMode(WHEEL_R, OUTPUT);
-  pinMode(WHEEL_L_DIRECTION, OUTPUT);
-  pinMode(WHEEL_R_DIRECTION, OUTPUT);
-
-  digitalWrite(WHEEL_L, L); // stop !
-  digitalWrite(WHEEL_R, L); // stop !
-  digitalWrite(WHEEL_L_DIRECTION, L);
-  oDirL = directionL = +1;
-  digitalWrite(WHEEL_R_DIRECTION, H);
-  oDirR = directionR = +1;
-
-  // SPEEDOMETER:
-
+  driveAdapter.setup(Integrated_ic);
+  driveAdapter.setSpeed(30);
+  driveAdapter.setDiff(-30);
   count = 0;
 
   pinMode(impulsL, INPUT);
@@ -206,235 +151,9 @@ void setup()
 
 void loop()
 {
-  char c;
-  String text = ""; // mit jedem Loop Durchlauf wird der text hier zurückgesetzt.
-  char respond[LEN];
-  char report[LEN];
-
-  // BlueTooth:
-
-  while (SerialBT.available())
-  {
-    c = SerialBT.read();
-    text += c;
-
-    switch (c)
-    {
-    case 'a': // LEDS on
-      break;
-    case 'b': // LEDS off
-      break;
-    case 'c': // STOP
-      speed = 0;
-      diff = 0;
-      break;
-    case 'd': // UP
-      speed = 60;
-      diff = 0;
-      break;
-    case 'e': // DOWN
-      speed = -60;
-      diff = 0;
-      break;
-    case 'f': // LEFT UP
-      speed = 60;
-      diff = -60;
-      break;
-    case 'g': // RIGHT UP
-      speed = 60;
-      diff = 60;
-      break;
-    case 'h': // ROTATE LEFT
-      speed = 0;
-      diff = -60;
-      break;
-    case 'i': // ROTATE RIGHT
-      speed = 0;
-      diff = 60;
-      break;
-    }
-
-    driveControl();
-
-    sprintf(report, "get: %c\n", c);
-    printf(report);
-  }
-
-  if (text.startsWith("ok"))
-  {
-    SerialBT.println("yes!");
-  }
-
-  if (text.startsWith("start"))
-  {
-    SerialBT.println("we start now!");
-    speed = 60;
-    diff = 0;
-    setL = setR = 40;
-    // Richtung bleibt derzeit noch weg....
-  }
-
-  /*    if (text.startsWith("+")) */
-
-  // Timer
-
   if (flag == 1)
   {
     onOff = (onOff == 0) ? 1 : 0;
     digitalWrite(led, onOff);
-    flag = 0;
-
-    // motor:  integrativer Anteil
-
-    meterL += amountL;
-    meterR += amountR;
-
-    if (amountL == 0)
-      vL = 0;
-    else
-    {
-      diffL >>= 1; // differentieller Anteil halbiert sich
-      if (actualL > meterL)
-        actualL = meterL - 40;
-      vL = diffL + amountL + meterL - actualL;
-    }
-    if (vL > 255)
-      vL = 255;
-    if (vL < 0)
-      vL = 0; // sollte 0 sein - zum debuggen besser...
-
-    if (amountR == 0)
-      vR = 0;
-    else
-    {
-      diffR >>= 1; // differentieller Anteil halbiert sich
-      if (actualR > meterR)
-        actualR = meterR - 40;
-      vR = diffR + amountR + meterR - actualR;
-    }
-    if (vR > 255)
-      vR = 255;
-    if (vR < 0)
-      vR = 0; // sollte 0 sein - zum debuggen besser...
-
-    // Tests:
-    //        sprintf(report, "s %02d d %02d setL %02d setR %02d mL %04d mR %04d aL %04d aR %04d vL %02d vR %02d",
-    //                         speed, diff, setL, setR, meterL, meterR, actualL, actualR, vL, vR );
-    //        printf("%s\n", report);
-    //   ---
-    sprintf(respond, "vL %03d vR %03d mR %d aR %d c %d", vL, vR, meterR, actualR, count);
-    count = 0;
-    // ---- SerialBT.println(respond);
-    // --- August 2022
   }
-}
-
-void driveControl(void) // speed, diff
-{
-  // erster Schritt: errechne aus speed und diff die setL und setR
-
-  setL = speed - diff;
-  setR = speed + diff;
-
-  // daraus wird zunächst die Richtung festgelegt und der Betrag gesetzt
-
-  if (setL >= 0)
-  {
-    amountL = setL;
-    digitalWrite(WHEEL_L_DIRECTION, L);
-    directionL = +1;
-  }
-  else
-  {
-    amountL = -setL;
-    digitalWrite(WHEEL_L_DIRECTION, H);
-    directionL = -1;
-  }
-
-  if (setR >= 0)
-  {
-    amountR = setR;
-    digitalWrite(WHEEL_R_DIRECTION, H);
-    directionR = +1;
-  }
-  else
-  {
-    amountR = -setR;
-    digitalWrite(WHEEL_R_DIRECTION, L);
-    directionL = -1;
-  }
-
-  //  hat sich dabei die Richtung verändert, dann werden die Wegstrecken zurückgesetzt:
-
-  if ((directionL != oDirL) || (setL == 0))
-  {
-    meterL = 0;
-    actualL = 0;
-  }
-
-  if ((directionR != oDirR) || (setR == 0))
-  {
-    meterR = 0;
-    actualR = 0;
-  }
-
-  //  Proportionalanteil:
-
-  vL = amountL;
-  vR = amountR;
-
-  // differentieller Anteil:
-
-  diffL = 2 * (amountL - oAmountL);
-  diffR = 2 * (amountR - oAmountR);
-
-  vL += diffL;
-  vR = diffR;
-
-  oAmountL = amountL;
-  oAmountR = amountR;
-}
-
-//****************************************************************
-// ISR Speedometer:
-//****************************************************************
-
-void impuls_L_isr(void)
-{
-  actualL++;
-}
-
-void impuls_R_isr(void)
-{
-  actualR++;
-}
-
-//****************************************************************
-//****************************************************************
-
-void IRAM_ATTR onTimer(void)
-{
-  tick++;
-
-  if ((tick & 0x3ff) == 0)
-  {
-    tenMsec++;
-  }
-
-  if (tenMsec == 100) // 100 entspricht 1 sec
-  {
-    // one Second :
-
-    tenMsec = 0;
-    flag = 1;
-  }
-
-  if (((tick << 2) & 0xff) > vL)
-    digitalWrite(WHEEL_L, L);
-  else
-    digitalWrite(WHEEL_L, H);
-  if (((tick << 2) & 0xff) > vR)
-    digitalWrite(WHEEL_R, L);
-  else
-    digitalWrite(WHEEL_R, H);
 }

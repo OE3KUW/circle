@@ -2,7 +2,19 @@
 #define DRIVE_ADAPTER
 #include <Arduino.h>
 
-class direction_t { // to class?
+#define WheelPinL 2
+#define WheelPinR 32
+#define WheelDirPinL 33
+#define WheelDirPinR 15
+
+#define ImpulsePinL 14
+#define ImpulsePinR 27
+
+enum Mode {
+    Integrated_ic, External_ic
+};
+
+class direction_t {
 public:
     int l;
     int r;
@@ -23,10 +35,10 @@ class DriveAdapter
 private:
     int __speed;
     int __diff;
-    static char pinL;
-    static char pinR;
-    static char pinDirL;
-    static char pinDirR;
+    static uint8_t pinL;
+    static uint8_t pinR;
+    static uint8_t pinDirL;
+    static uint8_t pinDirR;
     static direction_t vDist, Dist;
     direction_t speed, speed_old;
     static direction_t amount, amount_old;
@@ -34,6 +46,7 @@ private:
     static direction_t diff, comp;
     hw_timer_t *timer;
     static int tick;
+    static Mode mode;
 
 private:
     static void onTimer();
@@ -41,12 +54,14 @@ private:
 
 public:
     DriveAdapter();
-    DriveAdapter(char, char, char, char, char, char);
+    DriveAdapter(Mode);
     ~DriveAdapter();
 
-    void setup(char, char, char, char, char, char);
+    void setup(Mode);
     void setSpeed(int);
+    void setSpeed(int, int);
     void setDiff(int);
+    void setMode(Mode);
     int getSpeed();
     int getDiff();
     void update();
