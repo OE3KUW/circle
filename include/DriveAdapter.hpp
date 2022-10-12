@@ -23,51 +23,45 @@ public:
     direction_t(){}
     direction_t(int, int);
     void selfcp(direction_t&);
-    bool operator== (direction_t&);
+    bool operator== (direction_t&) const;
     direction_t operator+ (direction_t&);
+    direction_t getUnit() const;
+    String getLog();
 };
 
-void _isr_puls_l();
-void _isr_puls_r();
+
+void isr_puls_l();
+void isr_puls_r();
 
 class DriveAdapter
 {
 private:
-    int __speed;
-    int __diff;
+    int _speed;
+    int _diff{};
     static uint8_t pinL;
     static uint8_t pinR;
     static uint8_t pinDirL;
     static uint8_t pinDirR;
-    static direction_t vDist, Dist;
-    direction_t speed, speed_old;
-    static direction_t amount, amount_old;
-    static direction_t direction, direction_old;
-    static direction_t diff, comp;
-    hw_timer_t *timer;
-    static int tick;
+    direction_t speed;
+    direction_t direction;
+    static direction_t pulseCnt;
+    hw_timer_t *timer{};
     static Mode mode;
-
-private:
-    static void onTimer();
-    static void onUpdate();
 
 public:
     DriveAdapter();
-    DriveAdapter(Mode);
+    explicit DriveAdapter(Mode);
     ~DriveAdapter();
 
     void setup(Mode);
     void setSpeed(int);
     void setSpeed(int, int);
     void setDiff(int);
-    void setMode(Mode);
-    int getSpeed();
-    int getDiff();
     void update();
+    String getLog();
 
-    friend void _isr_puls_l();
-    friend void _isr_puls_r();
+    friend void isr_puls_l();
+    friend void isr_puls_r();
 
 };
 

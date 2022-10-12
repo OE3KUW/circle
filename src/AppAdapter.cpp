@@ -14,6 +14,7 @@ AppAdapter::AppAdapter()
 
 AppAdapter::AppAdapter(BluetoothSerial *_instance)
 {
+	apname = "CircleClient";
 	BTAdapter = _instance;
 }
 
@@ -30,7 +31,7 @@ void onEvent(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 	Serial.println("[INFO] " + event);
 }
 
-char AppAdapter::connect()
+char AppAdapter::begin()
 {
 	BTAdapter->register_callback(onEvent);
 	if (!BTAdapter->begin(apname))
@@ -45,6 +46,7 @@ char AppAdapter::connect()
 int AppAdapter::isAvailable() {
 	available = BTAdapter->available();
 	if(available) {
-		
+		return 1;
 	}
+	return 0;
 }
