@@ -392,7 +392,7 @@ void driveControl(void) // speed, diff
   vR = diffR;
 
   oAmountL = amountL;
-  oAmountR = amountR;
+  oAmountR = amountR; //Habe Dir ein paar Zeilen zur Erklärung des Amounts ins Team geschrieben .. 
 }
 
 //****************************************************************
