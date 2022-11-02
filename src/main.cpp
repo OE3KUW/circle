@@ -16,29 +16,29 @@
 #include <AppAdapter.hpp>
 
 // defines:
-#define H HIGH
-#define L LOW
-#define NUM_LEDS 4
-#define DATA_PIN 23
-#define CLOCK_PIN 18
+#define H                 HIGH
+#define L                 LOW
+#define NUM_LEDS          4
+#define DATA_PIN          23
+#define CLOCK_PIN         18
 
-#define NUM_LEDS 4
-#define DATA_PIN 23
-#define CLOCK_PIN 18
+#define NUM_LEDS          4
+#define DATA_PIN          23
+#define CLOCK_PIN         18
 
-#define WHEEL_L 2
-#define WHEEL_R A4
+#define WHEEL_L           2
+#define WHEEL_R           A4
 #define WHEEL_L_DIRECTION A5
 #define WHEEL_R_DIRECTION 15
 
-#define OLED_RESET -1
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
+#define OLED_RESET        -1
+#define SCREEN_WIDTH      128
+#define SCREEN_HEIGHT     64
 
 // Blue Tooth:
-#define LEN 100
-#define CR 13
-#define LF 10
+#define LEN               100
+#define CR                13
+#define LF                10
 
 // global variables:
 
@@ -150,7 +150,7 @@ void setup()
   oled.setTextSize(2);
   oled.setTextColor(WHITE);
   oled.setCursor(0, 0);
-  oled.print("Yieppy!");
+  oled.print("Yiepy !!!");
   oled.display();
 
   // RTOS:
