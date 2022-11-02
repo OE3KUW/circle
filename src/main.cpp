@@ -12,8 +12,7 @@
 #include <Adafruit_SSD1306.h>
 #include <FastLED.h>
 #include <BluetoothSerial.h>
-#include <DriveAdapter.hpp>
-#include <AppAdapter.hpp>
+#include "../lib/DriveAdapter/DriveAdapter.hpp"
 
 // defines:
 #define H HIGH
@@ -63,8 +62,6 @@ CRGB leds[NUM_LEDS];
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
 BluetoothSerial SerialBT;
-
-AppAdapter appAdapter;
 
 DriveAdapter driveAdapter;
 
