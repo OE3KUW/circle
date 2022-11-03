@@ -2,7 +2,24 @@
 #define DRIVE_ADAPTER
 #include <Arduino.h>
 
-class direction_t { // to class?
+#define WHEEL_PIN_L 2
+#define WHEEL_PIN_R 32
+#define WHEEL_DIR_PIN_L 33
+#define WHEEL_DIR_PIN_R 15
+
+#define MOTOR_LEFT_FORWARD 2
+#define MOTOR_LEFT_BACKWARD 15
+#define MOTOR_RIGHT_FORWARD 33
+#define MOTOR_RIGHT_BACKWARD 32
+
+#define ImpulsePinL 14
+#define ImpulsePinR 27
+
+enum Mode {
+    Integrated_ic, External_ic
+};
+
+class direction_t {
 public:
     int l;
     int r;
@@ -11,48 +28,45 @@ public:
     direction_t(){}
     direction_t(int, int);
     void selfcp(direction_t&);
-    bool operator== (direction_t&);
+    bool operator== (direction_t&) const;
     direction_t operator+ (direction_t&);
+    direction_t getUnit() const;
+    String getLog();
 };
 
-void _isr_puls_l();
-void _isr_puls_r();
+
+void isr_puls_l();
+void isr_puls_r();
 
 class DriveAdapter
 {
 private:
-    int __speed;
-    int __diff;
-    static char pinL;
-    static char pinR;
-    static char pinDirL;
-    static char pinDirR;
-    static direction_t vDist, Dist;
-    direction_t speed, speed_old;
-    static direction_t amount, amount_old;
-    static direction_t direction, direction_old;
-    static direction_t diff, comp;
-    hw_timer_t *timer;
-    static int tick;
-
-private:
-    static void onTimer();
-    static void onUpdate();
+    int _speed;
+    int _diff;
+    static uint8_t pinL;
+    static uint8_t pinR;
+    static uint8_t pinDirL;
+    static uint8_t pinDirR;
+    direction_t speed;
+    direction_t direction;
+    static direction_t pulseCnt;
+    hw_timer_t *timer{};
+    static Mode mode;
 
 public:
     DriveAdapter();
-    DriveAdapter(char, char, char, char, char, char);
+    explicit DriveAdapter(Mode);
     ~DriveAdapter();
 
-    void setup(char, char, char, char, char, char);
+    void setup(Mode);
     void setSpeed(int);
+    void setSpeed(direction_t);
     void setDiff(int);
-    int getSpeed();
-    int getDiff();
     void update();
+    String getLog();
 
-    friend void _isr_puls_l();
-    friend void _isr_puls_r();
+    friend void isr_puls_l();
+    friend void isr_puls_r();
 
 };
 
