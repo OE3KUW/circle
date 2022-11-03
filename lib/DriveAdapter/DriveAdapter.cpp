@@ -68,8 +68,8 @@ void DriveAdapter::setSpeed(int v) {
     update();
 }
 
-void DriveAdapter::setSpeed(direction_t spd) {
-    speed = spd;
+void DriveAdapter::setSpeed(direction_t _speed) {
+    speed = _speed;
     update();
 }
 
