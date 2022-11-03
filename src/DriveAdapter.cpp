@@ -5,10 +5,10 @@ const int chR = 1;
 const int chDirL = 2;
 const int chDirR = 3;
 
-uint8_t DriveAdapter::pinL = WheelPinL;
-uint8_t DriveAdapter::pinR = WheelPinR;
-uint8_t DriveAdapter::pinDirL = WheelDirPinL;
-uint8_t DriveAdapter::pinDirR = WheelDirPinR;
+uint8_t DriveAdapter::pinL = WHEEL_PIN_L;
+uint8_t DriveAdapter::pinR = WHEEL_PIN_R;
+uint8_t DriveAdapter::pinDirL = WHEEL_DIR_PIN_L;
+uint8_t DriveAdapter::pinDirR = WHEEL_DIR_PIN_R;
 Mode DriveAdapter::mode = Integrated_ic;
 direction_t DriveAdapter::pulseCnt = direction_t(0, 0);
 // integrated_ic == default mode
@@ -75,6 +75,12 @@ DriveAdapter::DriveAdapter(Mode m) {
 
 void DriveAdapter::setup(Mode m) {
     mode = m;
+    /*if(mode == External_ic) {
+        DriveAdapter::pinL = MOTOR_LEFT_FORWARD;
+        DriveAdapter::pinR = MOTOR_RIGHT_FORWARD;
+        DriveAdapter::pinDirL = MOTOR_LEFT_BACKWARD;
+        DriveAdapter::pinDirR = MOTOR_RIGHT_BACKWARD;
+    }*/
 
     pinMode(pinL, OUTPUT);
     pinMode(pinR, OUTPUT);
@@ -108,9 +114,8 @@ void DriveAdapter::setSpeed(int v) {
     update();
 }
 
-void DriveAdapter::setSpeed(int sL, int sR) {
-    speed.l = sL;
-    speed.r = sR;
+void DriveAdapter::setSpeed(direction_t spd) {
+    speed = spd;
     update();
 }
 
@@ -148,21 +153,21 @@ void DriveAdapter::update() {
         switch (direction.l) {
             case 1:
                 ledcWrite(chL, speed.l);
-                ledcWrite( chDirL, 0);
-            break;
-            case -1:
-                ledcWrite( chDirL, speed.l);
-                ledcWrite(chL, 0);
-            break;
-        }
-        switch (direction.r) {
-            case 1:
-                ledcWrite(chR, speed.l);
                 ledcWrite( chDirR, 0);
                 break;
             case -1:
-                ledcWrite( chDirR, speed.l);
-                ledcWrite(chR, 0);
+                ledcWrite( chDirR, speed.l * -1);
+                ledcWrite(chL, 0);
+                break;
+        }
+        switch (direction.r) {
+            case 1:
+                ledcWrite(chDirL, speed.r);
+                ledcWrite( chR, 0);
+                break;
+            case -1:
+                ledcWrite( chR, speed.r * -1);
+                ledcWrite(chDirL, 0);
                 break;
         }
     }

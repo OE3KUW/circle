@@ -2,10 +2,15 @@
 #define DRIVE_ADAPTER
 #include <Arduino.h>
 
-#define WheelPinL 2
-#define WheelPinR 32
-#define WheelDirPinL 33
-#define WheelDirPinR 15
+#define WHEEL_PIN_L 2
+#define WHEEL_PIN_R 32
+#define WHEEL_DIR_PIN_L 33
+#define WHEEL_DIR_PIN_R 15
+
+#define MOTOR_LEFT_FORWARD 2
+#define MOTOR_LEFT_BACKWARD 15
+#define MOTOR_RIGHT_FORWARD 33
+#define MOTOR_RIGHT_BACKWARD 32
 
 #define ImpulsePinL 14
 #define ImpulsePinR 27
@@ -37,7 +42,7 @@ class DriveAdapter
 {
 private:
     int _speed;
-    int _diff{};
+    int _diff;
     static uint8_t pinL;
     static uint8_t pinR;
     static uint8_t pinDirL;
@@ -55,7 +60,7 @@ public:
 
     void setup(Mode);
     void setSpeed(int);
-    void setSpeed(int, int);
+    void setSpeed(direction_t);
     void setDiff(int);
     void update();
     String getLog();
