@@ -1,6 +1,8 @@
 #ifndef DRIVE_ADAPTER
 #define DRIVE_ADAPTER
+
 #include <Arduino.h>
+#include "direction_t.h"
 
 #define WHEEL_PIN_L 2
 #define WHEEL_PIN_R 32
@@ -18,22 +20,6 @@
 enum Mode {
     Integrated_ic, External_ic
 };
-
-class direction_t {
-public:
-    int l;
-    int r;
-
-public:
-    direction_t(){}
-    direction_t(int, int);
-    void selfcp(direction_t&);
-    bool operator== (direction_t&) const;
-    direction_t operator+ (direction_t&);
-    direction_t getUnit() const;
-    String getLog();
-};
-
 
 void isr_puls_l();
 void isr_puls_r();

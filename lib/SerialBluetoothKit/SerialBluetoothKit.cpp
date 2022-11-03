@@ -1,7 +1,8 @@
-#include <SerialBluetoothKit.h>
+#include "SerialBluetoothKit.h"
 
 #include <utility>
  SerialBluetoothKit::SerialBluetoothKit():BluetoothSerial() {
+    buffer = "";
 }
 
 void SerialBluetoothKit::begin(String name) {
@@ -13,7 +14,14 @@ void SerialBluetoothKit::begin() {
 }
 
 direction_t SerialBluetoothKit::readSpeed() {
-    String raw = BluetoothSerial::readString();
+    String raw;
+    if(buffer == "") {
+        raw = BluetoothSerial::readString();
+    } else {
+        raw = SerialBluetoothKit::buffer;
+        buffer = "";
+    }
+
     bool isLeft;
     bool isValue;
     String value;
@@ -41,4 +49,9 @@ direction_t SerialBluetoothKit::readSpeed() {
         }
     }
     return {l, r};
+}
+
+bool SerialBluetoothKit::isJson() {
+    buffer = BluetoothSerial::readString();
+    return buffer[0] == '{' && buffer[buffer.length()-1] == '}';
 }
