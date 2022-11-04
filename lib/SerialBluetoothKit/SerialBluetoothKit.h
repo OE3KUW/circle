@@ -15,6 +15,7 @@ public:
     void begin(String);
     void begin();
     bool isJson();
+    static direction_t decodeSpeed(const String&);
     direction_t readSpeed();
 };
 

@@ -106,22 +106,22 @@ void DriveAdapter::update() {
     } else if(mode == External_ic) {
         switch (direction.l) {
             case 1:
-                ledcWrite(chL, speed.l);
-                ledcWrite( chDirR, 0);
+                ledcWrite(chDirR, speed.l);
+                ledcWrite( chL, 0);
                 break;
             case -1:
-                ledcWrite( chDirR, speed.l * -1);
-                ledcWrite(chL, 0);
+                ledcWrite( chL, speed.l * -1);
+                ledcWrite(chDirR, 0);
                 break;
         }
         switch (direction.r) {
             case 1:
-                ledcWrite(chDirL, speed.r);
-                ledcWrite( chR, 0);
+                ledcWrite(chR, speed.r);
+                ledcWrite( chDirL, 0);
                 break;
             case -1:
-                ledcWrite( chR, speed.r * -1);
-                ledcWrite(chDirL, 0);
+                ledcWrite( chDirL, speed.r * -1);
+                ledcWrite(chR, 0);
                 break;
         }
     }
@@ -129,7 +129,7 @@ void DriveAdapter::update() {
 }
 
 String DriveAdapter::getLog() {
-    return "DriveAdapter: " + speed.getLog() + direction.getLog() + pulseCnt.getLog();
+    return "DriveAdapter: " + speed.toString() + direction.toString() + pulseCnt.toString();
 }
 
 void isr_puls_l() {
