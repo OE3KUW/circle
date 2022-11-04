@@ -38,13 +38,20 @@ direction_t SerialBluetoothKit::readSpeed() {
                 r = value.toInt();
             }
             value = "";
+            if(raw[n] == '}') {
+                buffer = "";
+                for(int i = n; n < raw.length(); i++) {
+                    buffer[i-n] = raw[n];
+                }
+                break;
+            }
         } else if(isValue) {
             value += raw[n];
-        } else if(raw[n] == '"' && raw[n-1] == 'l' && raw[n-2] == '"') {
+        } else if(raw[n] == 'l') {
             isLeft = true;
-        } else if(raw[n] == '"' && raw[n-1] == 'r' && raw[n-2] == '"') {
+        } else if(raw[n] == 'r') {
             isLeft = false;
-        } else if(raw[n] == ':') {
+        } else if(raw[n] == '=') {
             isValue = true;
         }
     }
@@ -54,4 +61,34 @@ direction_t SerialBluetoothKit::readSpeed() {
 bool SerialBluetoothKit::isJson() {
     buffer = BluetoothSerial::readString();
     return buffer[0] == '{' && buffer[buffer.length()-1] == '}';
+}
+
+direction_t SerialBluetoothKit::decodeSpeed(const String& raw) {
+    bool isLeft;
+    bool isValue;
+    String value;
+    int l, r;
+    for(char n : raw) {
+        if (n == ',' || n == '}') {
+            isValue = false;
+            if(isLeft) {
+                l = value.toInt();
+            } else {
+                r = value.toInt();
+            }
+            value = "";
+            if(n == '}') {
+                break;
+            }
+        } else if(isValue) {
+            value += n;
+        } else if(n == 'l') {
+            isLeft = true;
+        } else if(n == 'r') {
+            isLeft = false;
+        } else if(n == '=') {
+            isValue = true;
+        }
+    }
+    return {l, r};
 }

@@ -129,7 +129,7 @@ void DriveAdapter::update() {
 }
 
 String DriveAdapter::getLog() {
-    return "DriveAdapter: " + speed.getLog() + direction.getLog() + pulseCnt.getLog();
+    return "DriveAdapter: " + speed.toString() + direction.toString() + pulseCnt.toString();
 }
 
 void isr_puls_l() {

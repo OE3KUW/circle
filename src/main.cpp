@@ -28,12 +28,28 @@ void setup() {
     Serial.println("The Roboter started, now you can pair it with bluetooth!");
 }
 
+int cmdavailable = 0;
+int cmd;
+int cmdp = 0;
+char command[50] = "";
+
 void loop() {
-    if (Bluetooth.available()) {
-        direction_t speed = Bluetooth.readSpeed();
-        driveAdapter.setSpeed(speed);
-        Serial.print("[speed] " + speed.getLog());
-        Bluetooth.println("[speed] " + speed.getLog());
+    if (Bluetooth.available() && !cmdavailable) {
+        cmd = Bluetooth.read();
+        if (cmd == 0) {
+            command[cmdp] = '\0';
+            cmdp = 0;
+            cmdavailable = 1;
+        } else {
+            command[cmdp++] = (char) lowByte(cmd);
+        }
+    }
+
+    // Command Handling
+    if (cmdavailable) {
+        cmdavailable = 0;
+        Serial.println(command);
+        driveAdapter.setSpeed(SerialBluetoothKit::decodeSpeed(command));
     }
     if (Serial.available()) {
         Bluetooth.write(Serial.read());
