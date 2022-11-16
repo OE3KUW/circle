@@ -13,54 +13,8 @@ void SerialBluetoothKit::begin() {
     BluetoothSerial::begin("EL-Roboter");
 }
 
-direction_t SerialBluetoothKit::readSpeed() {
-    String raw;
-    if(buffer == "") {
-        raw = BluetoothSerial::readString();
-    } else {
-        raw = SerialBluetoothKit::buffer;
-        buffer = "";
-    }
-
-    bool isLeft;
-    bool isValue;
-    String value;
-    int l, r;
-    for(int n = 0; n < raw.length(); n++) {
-        if (raw[n] == ',' || raw[n] == '}') {
-            for(char c : value) {
-                Serial.print(c);
-            }
-            isValue = false;
-            if(isLeft) {
-                l = value.toInt();
-            } else {
-                r = value.toInt();
-            }
-            value = "";
-            if(raw[n] == '}') {
-                buffer = "";
-                for(int i = n; n < raw.length(); i++) {
-                    buffer[i-n] = raw[n];
-                }
-                break;
-            }
-        } else if(isValue) {
-            value += raw[n];
-        } else if(raw[n] == 'l') {
-            isLeft = true;
-        } else if(raw[n] == 'r') {
-            isLeft = false;
-        } else if(raw[n] == '=') {
-            isValue = true;
-        }
-    }
-    return {l, r};
-}
-
 bool SerialBluetoothKit::isJson() {
-    buffer = BluetoothSerial::readString();
-    return buffer[0] == '{' && buffer[buffer.length()-1] == '}';
+    return buffer[0] == '{' && strchr(buffer, '}');
 }
 
 direction_t SerialBluetoothKit::decodeSpeed(const String& raw) {
@@ -91,4 +45,63 @@ direction_t SerialBluetoothKit::decodeSpeed(const String& raw) {
         }
     }
     return {l, r};
+}
+
+int SerialBluetoothKit::cmdavailable() {
+    if(!buff_available && BluetoothSerial::available()) {
+        int _2byte = BluetoothSerial::read();
+        if(_2byte == 0) {
+            buffer[buffp] = '\0';
+            buffp = 0;
+            buff_available = 1;
+        } else {
+            buffer[buffp++] = (char) lowByte(_2byte);
+        }
+    }
+    return buff_available;
+}
+
+char* SerialBluetoothKit::readcmd() {
+    if(buff_available) {
+        return buffer;
+    }
+    return nullptr;
+}
+
+direction_t SerialBluetoothKit::readSpeed() {
+    if(buff_available) {
+        bool isLeft;
+        bool isValue;
+        String value;
+        int l, r;
+        for(int n = 0; n < strlen(buffer); n++) {
+            if (buffer[n] == ',' || buffer[n] == '}') {
+                isValue = false;
+                if(isLeft) {
+                    l = value.toInt();
+                } else {
+                    r = value.toInt();
+                }
+                value = "";
+                if(buffer[n] == '}') {
+                    break;
+                }
+            } else if(isValue) {
+                value += buffer[n];
+            } else if(buffer[n] == 'l') {
+                isLeft = true;
+            } else if(buffer[n] == 'r') {
+                isLeft = false;
+            } else if(buffer[n] == '=') {
+                isValue = true;
+            }
+        }
+        finish_cmd_handling();
+        return {l, r};
+    }
+    return {0, 0};
+}
+
+void SerialBluetoothKit::finish_cmd_handling() {
+    buff_available = 0;
 }

@@ -9,7 +9,9 @@ class SerialBluetoothKit : public BluetoothSerial
 {
 private:
     String apname;
-    String buffer;
+    char buffer[128];
+    int buffp;
+    int buff_available;
 public:
     SerialBluetoothKit();
     void begin(String);
@@ -17,6 +19,10 @@ public:
     bool isJson();
     static direction_t decodeSpeed(const String&);
     direction_t readSpeed();
+    int cmdavailable();
+    char* readcmd();
+    void finish_cmd_handling();
+
 };
 
 
