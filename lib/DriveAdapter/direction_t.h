@@ -18,7 +18,7 @@ public:
     bool operator== (direction_t&) const;
     direction_t operator+ (direction_t&);
     direction_t getUnit() const;
-    String toString();
+    String getLog();
 };
 
 

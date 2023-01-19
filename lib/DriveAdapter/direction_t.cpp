@@ -41,7 +41,7 @@ direction_t direction_t::getUnit() const {
     return cp;
 }
 
-String direction_t::toString() {
+String direction_t::getLog() {
     String msg = "direction_t: ";
     msg.concat(l);
     msg.concat(", ");

@@ -36,6 +36,7 @@ private:
     direction_t speed;
     direction_t direction;
     static direction_t pulseCnt;
+    hw_timer_t *timer{};
     static Mode mode;
 
 public:
