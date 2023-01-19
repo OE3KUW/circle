@@ -33,6 +33,8 @@ void loop() {
         if(appAdapter.isMsg()) {
             Serial.println(appAdapter.readMsg());
         } else if(appAdapter.isSpeed()) {
+            direction_t speed = appAdapter.readSpeed();
+            driveAdapter.setSpeed(speed);
             Serial.println(appAdapter.readSpeed().toString());
         } else if(appAdapter.isColor()) {
             CRGB col = appAdapter.readColor();
